@@ -641,14 +641,16 @@ class Solr(object):
         self.log.debug("Built add request of %s docs in %0.2f seconds." % (len(docs), end_time - start_time))
         response = self._update(m, commit=commit)
     
-    def delete(self, id=None, q=None, commit=True, fromPending=True, fromCommitted=True):
+    def delete(self, id=None, ids=None, q=None, commit=True, fromPending=True, fromCommitted=True):
         """Deletes documents."""
-        if id is None and q is None:
+        if id is None and ids is None and q is None:
             raise ValueError('You must specify "id" or "q".')
         elif id is not None and q is not None:
             raise ValueError('You many only specify "id" OR "q", not both.')
         elif id is not None:
             m = '<delete><id>%s</id></delete>' % id
+        elif ids is not None:
+            m = '<delete>%s</delete>' % ''.join(['<id>%s</id>' % id for id in ids])
         elif q is not None:
             m = '<delete><query>%s</query></delete>' % q
         
